@@ -1,0 +1,13 @@
+{:paths ["src" "notebooks" "data"]
+
+ :deps  {org.clojure/clojure            {:mvn/version "1.11.1"}
+         io.github.nextjournal/clerk    {:mvn/version "0.15.957"}
+         ;com.fzakaria/slf4j-timbre   {:mvn/version "0.4.1"}
+         techascent/tech.ml.dataset     {:mvn/version "7.021"}
+         scicloj/tablecloth             {:mvn/version "7.021"}
+         scicloj/scicloj.ml             {:mvn/version "0.3"}
+         clj-python/libpython-clj       {:mvn/version "2.025"}
+         scicloj/sklearn-clj            {:mvn/version "0.4.0"}
+         generateme/fastmath            {:mvn/version "2.2.1"
+                                         :exclusions  [com.github.haifengl/smile-mkl]}}}
+
