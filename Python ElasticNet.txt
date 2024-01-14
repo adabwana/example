@@ -1,0 +1,47 @@
+import numpy as np
+import pandas as pd
+from itertools import product
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.linear_model import ElasticNet
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from time import time
+
+# Load dataset
+df = pd.read_csv('your_dataset.csv')
+
+# Split your data into train-validation-test sets
+train_valid_set, test_set = train_test_split(df, test_size=0.3, random_state=42)
+train_set, valid_set = train_test_split(train_valid_set, test_size=0.2857, random_state=42)
+
+# Separate features and target variable:
+X_train = train_set.drop('target', axis=1).values
+y_train = train_set['target'].values
+X_valid = valid_set.drop('target', axis=1).values
+y_valid = valid_set['target'].values
+X_test = test_set.drop('target', axis=1).values
+y_test = test_set['target'].values
+
+# Initialize the ElasticNet model:
+model = ElasticNet()
+
+#Define the parameter grid for GridSearchCV:
+param_grid = {
+ 'alpha': np.logspace(-5, 2, 8),
+ 'l1_ratio': np.linspace(0, 1, 21)
+}
+
+# Perform GridSearchCV on the validation set to find the best hyperparameters:
+models = []
+for params in product(param_grid['alpha'], param_grid['l1_ratio']):
+   model = ElasticNet(alpha=params[0], l1_ratio=params[1])
+   grid_search = GridSearchCV(estimator=model, param_grid={'alpha': [params[0]], 'l1_ratio': [params[1]]}, scoring='neg_mean_squared_error', cv=5, n_jobs=-1)
+   #grid_search = GridSearchCV(estimator=model, param_grid={'alpha': params[0], 'l1_ratio': params[1]}, scoring='neg_mean_squared_error', cv=5, n_jobs=-1)
+   start = time()
+   grid_search.fit(X_valid, y_valid)
+   end = time()
+   time_taken = (end - start) * 1e9 # convert to nanoseconds
+   models.append((time_taken, params[0], params[1], grid_search.best_score_, mean_absolute_error(y_valid, grid_search.predict(X_valid)), np.sqrt(mean_squared_error(y_valid, grid_search.predict(X_valid)))))
+
+# Sort the models by computation time and print the top 5:
+sorted_models = sorted(models, key=lambda x: x[0])[:5]
+print(pd.DataFrame(sorted_models, columns=["Computation Time (ns)", "Alpha", "L1 Ratio", "Adjusted R^2", "MAE", "RMSE"]))

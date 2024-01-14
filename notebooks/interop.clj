@@ -13,6 +13,8 @@
 
 (require-python '[numpy :as np])
 (require-python '[pandas :as pd])
+(require-python 'itertools
+                '(itertools product))
 (require-python 'sklearn.model_selection
                 '(sklearn.model_selection train_test_split GridSearchCV))
 (require-python 'sklearn.linear_model
@@ -21,9 +23,6 @@
                 '(sklearn.metrics mean_absolute_error mean_squared_error r2_score))
 (require-python 'time
                 '(time time))
-(require-python 'itertools
-                '(itertools product))
-
 
 ;; Run clerk functions in comment to evaluate namespace in browser interactively
 (comment
