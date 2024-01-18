@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1" name="viewport"><meta content="Scatter plot" property="og:description"><meta content="Visualize Data" property="og:title"><meta content="article:clerk" property="og:type"><meta content="summary_large_image" name="twitter:card"><script src="https://cdn.tailwindcss.com?plugins=typography" type="text/javascript"></script><script>tailwind.config = {
+  darkMode: "class",
+  content: ["./tw/viewer.js", "./tw/**/*.edn"],
+  safelist: ['dark'],
+  theme: {
+    extend: {},
+    fontFamily: {
+      sans: ["Fira Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+      serif: ["PT Serif", "serif"],
+      mono: ["Fira Mono", "monospace"]
+    }
+  },
+  variants: {
+    extend: {},
+  },
+  plugins: [],
+}
+</script><style type="text/tailwindcss">@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 18px;
+  }
+  @media (max-width: 600px) {
+    html {
+      font-size: 16px;
+    }
+  }
+  .font-condensed { font-family: "Fira Sans Condensed", sans-serif; }
+  .font-inter     { font-family: "Inter", sans-serif; }
+  body {
+    @apply font-serif antialiased text-gray-900 sm:overscroll-y-none;
+  }
+  code, .code {
+    @apply font-mono text-sm text-gray-900 bg-slate-50 px-0.5 py-px rounded dark:bg-gray-800;
+  }
+  code::before, code::after { @apply content-none !important; }
+  h1, h3, h4, h5, h6 {
+    @apply font-condensed font-bold mt-8 first:mt-0;
+  }
+  h2 {
+    /*We cannot collapse margins due to nesting but we want to*/
+    /*keep the h2’s large margin visible*/
+    @apply font-condensed font-bold mt-8 first:mt-2;
+  }
+  h1 { @apply text-4xl; }
+  h2 { @apply text-3xl; }
+  h3 { @apply text-2xl; }
+
+  @media print {
+      h1 { @apply text-2xl !important; }
+      h2 { @apply text-xl !important; }
+      h3 { @apply text-lg !important; }
+  }
+
+  button { @apply focus:outline-none; }
+  strong { @apply font-bold; }
+  em     { @apply italic; }
+  pre    { @apply m-0 font-mono; }
+  table img { @apply inline-block; }
+}
+
+/* Compatibility */
+/* --------------------------------------------------------------- */
+/* TODO: Verify which colors are in use and replace with Tailwind
+   colors accordingly. Move Nj-specific styles out of here. */
+
+:root {
+  --teal-color: #31afd0;
+  --dark-teal-color: #095960;
+  --near-black-color: #2e2e2c;
+  --red-color: #d64242;
+  --dark-blue-color: #1f2937;
+  --dark-blue-60-color: rgba(28, 42, 56, 0.6);
+  --gray-panel-color: rgba(239, 241, 245, 1.000);
+  --brand-color: var(--dark-blue-color);
+  --link-color: #5046e4;
+  --command-bar-selected-color: var(--teal-color);
+}
+
+.serif      { @apply font-serif; }
+.sans-serif { @apply font-sans; }
+.monospace  { @apply font-mono; }
+.inter      { @apply font-inter; }
+
+.border-color-teal { border-color: var(--dark-teal-color); }
+.teal { color: var(--teal-color); }
+.bg-dark-blue { background: var(--dark-blue-color); }
+.bg-dark-blue-60 { background: rgba(28, 42, 56, 0.6); }
+.bg-gray-panel { background: var(--gray-panel-color); }
+.text-dark-blue  { color: var(--dark-blue-color); }
+.text-dark-blue-60 { color: var(--dark-blue-60-color); }
+.border-dark-blue-30 { border-color: rgba(28, 42, 56, 0.6); }
+.text-brand { color: var(--dark-blue-color); }
+.bg-brand { background: var(--dark-blue-color); }
+.text-selected { color: white; }
+.red { color: var(--red-color); }
+
+/* Disclose Button */
+/* --------------------------------------------------------------- */
+
+.disclose {
+  @apply content-none border-solid cursor-pointer inline-block relative mr-[3px] top-[-2px] transition-all;
+  border-color: var(--near-black-color) transparent;
+  border-width: 6px 4px 0;
+}
+.disclose:hover {
+  border-color: var(--near-black-color) transparent;
+}
+.dark .disclose,
+.dark .disclose:hover {
+  border-color: white transparent;
+}
+.disclose.collapsed {
+  @apply rotate-[-90deg];
+}
+
+/* Layout */
+/* --------------------------------------------------------------- */
+
+.page {
+  @apply max-w-5xl mx-auto px-12 box-border flex-shrink-0;
+}
+.max-w-prose { @apply max-w-[46rem] !important; }
+.max-w-wide  { @apply max-w-3xl !important; }
+
+/* List Styles */
+/* --------------------------------------------------------------- */
+
+.task-list-item + .task-list-item,
+.markdown-viewer ul ul {
+  @apply mt-1 mb-0;
+}
+
+/* compact TOC */
+.markdown-viewer .toc ul {
+  list-style: none;
+  @apply my-1;
+}
+
+/* Code Viewer */
+/* --------------------------------------------------------------- */
+
+.code-viewer {
+  @apply font-mono bg-slate-100 rounded-sm text-sm overflow-x-auto dark:bg-gray-800;
+}
+.code-listing  {
+    @apply -ml-8 -mr-8 relative !important;
+}
+.code-viewer .cm-content {
+  @apply py-4 px-8;
+}
+@media (min-width: 960px){
+    .notebook-viewer .code-viewer .cm-content {
+        @apply pl-12;
+    }
+    .notebook-viewer .code-listing {
+        width: 48rem !important;
+        @apply -ml-12 mr-0 !important;
+    }
+}
+/* Don’t show focus outline when double-clicking cell in Safari */
+.cm-scroller { @apply focus:outline-none; }
+
+/* Syntax Highlighting */
+/* --------------------------------------------------------------- */
+
+.inspected-value { @apply text-xs font-mono leading-[1.25rem]; }
+.cmt-strong, .cmt-heading { @apply font-bold; }
+.cmt-italic, .cmt-emphasis { @apply italic; }
+.cmt-strikethrough { @apply line-through; }
+.cmt-link { @apply underline; }
+.untyped-value { @apply whitespace-nowrap; }
+
+.cm-editor, .cmt-default, .result-viewer {
+  @apply text-slate-800 dark:text-slate-300;
+}
+.cmt-keyword {
+  @apply text-purple-800 dark:text-pink-400;
+}
+.cmt-atom, .cmt-bool, .cmt-url, .cmt-contentSeparator, .cmt-labelName {
+  @apply text-blue-900 dark:text-blue-300;
+}
+.cmt-inserted, .cmt-literal {
+  @apply text-emerald-700 dark:text-emerald-200;
+}
+.cmt-string, .cmt-deleted {
+  @apply text-rose-700 dark:text-sky-300;
+}
+.cmt-italic.cmt-string {
+  @apply dark:text-sky-200;
+}
+.cmt-regexp, .cmt-escape {
+  @apply text-orange-500 dark:text-orange-300;
+}
+.cmt-variableName {
+  @apply text-blue-800 dark:text-sky-300;
+}
+.cmt-typeName, .cmt-namespace {
+  @apply text-emerald-600 dark:text-emerald-300;
+}
+.cmt-className {
+  @apply text-teal-600 dark:text-teal-200;
+}
+.cmt-macroName {
+  @apply text-teal-700 dark:text-teal-200;
+}
+.cmt-propertyName {
+  @apply text-blue-700 dark:text-blue-200;
+}
+.cmt-comment {
+  @apply text-slate-500 dark:text-slate-400;
+}
+.cmt-meta {
+  @apply text-slate-600 dark:text-slate-400;
+}
+.cmt-invalid {
+  @apply text-red-500 dark:text-red-300;
+}
+
+.result-data {
+  @apply font-mono text-sm overflow-x-auto whitespace-nowrap leading-normal;
+}
+.result-data::-webkit-scrollbar, .path-nav::-webkit-scrollbar {
+  @apply h-0;
+}
+.result-data-collapsed {
+  @apply whitespace-nowrap;
+}
+.result-data-field {
+  @apply ml-4 whitespace-nowrap;
+}
+.result-data-field-link{
+  @apply ml-4 whitespace-nowrap cursor-pointer;
+}
+.result-data-field-link:hover {
+  @apply text-black bg-black/5;
+}
+.result-text-empty {
+  color: rgba(0,0,0,.3);
+}
+.browsify-button:hover {
+  box-shadow: -2px 0 0 2px #edf2f7;
+}
+
+/* Prose */
+/* --------------------------------------------------------------- */
+
+.notebook-viewer,
+.markdown-viewer {
+  @apply prose
+    dark:prose-invert
+    prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+    dark:prose-a:text-blue-300
+    prose-p:mt-4 prose-p:leading-snug
+    prose-ol:mt-4 prose-ol:mb-6 prose-ol:leading-snug
+    prose-ul:mt-4 prose-ul:mb-6 prose-ul:leading-snug
+    prose-blockquote:mt-4 prose-blockquote:leading-snug
+    prose-hr:mt-6 prose-hr:border-t-2 prose-hr:border-solid prose-hr:border-slate-200
+    prose-figure:mt-4
+    prose-figcaption:mt-2 prose-figcaption:text-xs
+    prose-headings:mb-4
+    prose-table:mt-0
+    prose-th:mb-0
+    prose-img:my-0
+    prose-code:font-medium prose-code:bg-slate-100
+    max-w-none;
+}
+.markdown-viewer blockquote p:first-of-type:before,
+.markdown-viewer blockquote p:last-of-type:after {
+  @apply content-none;
+}
+.markdown-node-viewer.result-viewer.fragment-item {
+    @apply mb-0 !important;
+}
+
+/* Images */
+/* --------------------------------------------------------------- */
+
+
+/* Todo Lists */
+/* --------------------------------------------------------------- */
+
+.contains-task-list {
+  @apply pl-6 list-none;
+}
+.contains-task-list input[type="checkbox"] {
+  @apply appearance-none h-4 w-4 rounded border border-slate-200 relative mr-[0.3rem] ml-[-1.5rem] top-[0.15rem];
+}
+.contains-task-list input[type="checkbox"]:checked {
+  @apply border-indigo-600 bg-indigo-600 bg-no-repeat bg-contain;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+
+/* Markdown TOC */
+/* --------------------------------------------------------------- */
+
+.markdown-viewer .toc      { @apply mt-4; }
+.markdown-viewer h1 + .toc { @apply mt-8; }
+
+.markdown-viewer .toc h1,
+.markdown-viewer .toc h2,
+.markdown-viewer .toc h3,
+.markdown-viewer .toc h4,
+.markdown-viewer .toc h5,
+.markdown-viewer .toc h6 {
+  @apply text-base text-indigo-600 font-sans my-0;
+}
+.markdown-viewer .toc a {
+  @apply text-indigo-600 font-normal no-underline hover:underline;
+}
+.markdown-viewer .toc li    { @apply m-0; }
+.markdown-viewer .toc ul ul { @apply pl-4; }
+
+/* Notebook Spacing */
+/* --------------------------------------------------------------- */
+
+.markdown-viewer *:first-child:not(.code-viewer):not(li):not(h2):not(.sidenote) { @apply mt-0; }
+/*.viewer + .viewer { @apply mt-6; }*/
+.viewer + .result-viewer { @apply mt-0; }
+.code-viewer + .result-viewer { @apply mt-3; }
+.markdown-viewer + .markdown-viewer { @apply mt-0; }
+
+/* Sidenotes */
+/* --------------------------------------------------------------- */
+
+.sidenote-ref {
+  @apply top-[-0.5em] w-auto h-auto inline border-0 bg-transparent m-0 pointer-events-none;
+}
+.sidenote {
+  @apply block font-sans text-xs mt-4 bg-slate-100 dark:bg-slate-800 p-4;
+  font-style: normal;
+  font-weight: normal;
+}
+.sidenote-container {
+  @apply mb-4;
+}
+@media (min-width: 860px) {
+  .sidenote sup { @apply inline; }
+  .sidenote-column {
+    @apply w-[165px] absolute right-0 top-0 -mr-[205px];
+  }
+  .sidenote {
+    @apply bg-transparent dark:bg-transparent p-0;
+  }
+  .sidenote:first-child {
+    @apply mt-1;
+  }
+  .sidenotes-layout .markdown-viewer {
+    @apply pr-[241px];
+  }
+  .sidenote-container {
+    @apply relative mb-0;
+  }
+  .sidenotes-layout h1 {
+    @apply w-[756px] !important;
+  }
+}
+.code-viewer + .viewer:not(.code-viewer):not(.code-viewer-folded),
+.code-viewer-folded + .viewer:not(.code-viewer):not(.code-viewer-folded),
+.result-viewer:not(.markdown-node-viewer) + .result-viewer {
+  @apply mt-2;
+}
+.code-viewer + .code-viewer-folded {
+  @apply mt-4;
+}
+.result-viewer {
+  @apply leading-tight mb-6;
+}
+.code-viewer.fragment-item.result-viewer {
+  @apply mb-0 !important;
+}
+.result-viewer figure {
+  @apply mt-0 !important;
+}
+@media (min-width: 768px) {
+  .devcard-desc > div {
+    @apply max-w-full m-0;
+  }
+}
+
+/* Command Palette */
+/* --------------------------------------------------------------- */
+
+.nj-commands-input {
+  @apply bg-transparent text-white;
+}
+.nj-context-menu-item:hover:not([disabled]) {
+  @apply cursor-pointer;
+  background-color: rgba(255,255,255,.14);
+}
+
+/* Devdocs */
+/* --------------------------------------------------------------- */
+
+.logo, .logo-white {
+  @apply block indent-[-999em];
+  background: url(/images/nextjournal-logo.svg) center center no-repeat;
+}
+.devdocs-body {
+  @apply font-inter;
+}
+
+/* Workarounds */
+/* --------------------------------------------------------------- */
+
+/* Fixes vega viewer resizing into infinity */
+.vega-embed .chart-wrapper { @apply h-auto !important; }
+/* fixes fraction separators being overridden by tw’s border-color */
+.katex * { @apply border-black; }
+
+@media print {
+    .dark-mode-toggle,
+    .toc-toggle { @apply hidden; }
+    .notebook-viewer { @apply pt-0; font-size: 12pt !important; margin-left: 0 !important; }
+    .code-viewer .cm-content,
+    .viewer-code .cm-content { @apply whitespace-pre-wrap !important; overflow: none; }
+    .code-viewer .cm-line { font-size: 12pt !important; }
+    html * { page-break-inside: avoid !important; }
+    .toc-panel { @apply hidden; }
+}
+</style><script src="https://storage.clerk.garden/nextjournal/clerk-assets@3mwzShgnuyfhgFN9ahRYKqV32K11/viewer.js?immutable=true" type="module"></script><link href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://fonts.bunny.net" rel="preconnect"><link href="https://fonts.bunny.net/css?family=fira-mono:400,700%7Cfira-sans:400,400i,500,500i,700,700i%7Cfira-sans-condensed:700,700i%7Cpt-serif:400,400i,700,700i" rel="stylesheet" type="text/css"></head><body class="dark:bg-gray-900"><div id="clerk"></div><script type="module">let viewer = nextjournal.clerk.sci_env
+let state = "{:bundle? false, :path->doc {\"\" {:path [], :nextjournal/value {:toc [{:title \"Visualize Data\", :emoji nil, :path \"#visualize-data\", :items []}], :sidenotes? false, :toc-visibility false, :atom-var-name->state #viewer-eval (nextjournal.clerk.render/intern-atoms! {}), :ns #viewer-eval (ns visualize-data), :file \"notebooks/visualize_data.clj\", :scope visualize-data, :bundle? false, :header {:path [], :nextjournal/value [:div.viewer.w-full.max-w-prose.px-8.not-prose.mt-3 [:div.mb-8.text-xs.sans-serif.text-slate-400 nil nil [:span \"Generated with \" [:a.font-medium.border-b.border-dotted.border-slate-300.hover:text-indigo-500.hover:border-indigo-500.dark:border-slate-500.dark:hover:text-white.dark:hover:border-white.transition {:href \"https://clerk.vision\"} \"Clerk\"] \" from \" [:a.font-medium.border-b.border-dotted.border-slate-300.hover:text-indigo-500.hover:border-indigo-500.dark:border-slate-500.dark:hover:text-white.dark:hover:border-white.transition {:href nil} \"notebooks/visualize_data.clj\" nil]]]], :nextjournal/viewer {:name nextjournal.clerk.viewer/html-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-html, :hash \"5drpr3yzJ1CcHNbRHnK2sVyn7YUmXB\"}}, :open-graph {:type \"article:clerk\", :title \"Visualize Data\", :description \"Scatter plot\"}, :title \"Visualize Data\", :blocks [{:path [], :nextjournal/value \"(ns visualize-data\\n  (:require\\n   [aerial.hanami.templates :as ht]\\n   [generate-data :refer [data]]\\n   [nextjournal.clerk :as clerk]\\n   [scicloj.ml.dataset :as ds]\\n   [scicloj.noj.v1.vis.hanami :as hanami]\\n   [scicloj.kind-clerk.api :as kind-clerk]))\", :nextjournal/render-opts {:loc {:line 1, :end-line 8, :column 1, :end-column 45}, :id \"visualize-data/anon-expr-5dtiTaGxMDxxLx4cKHfLGzcZrcf6Wt-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value \"(kind-clerk/setup!)\", :nextjournal/render-opts {:loc {:line 10, :end-line 10, :column 1, :end-column 20}, :id \"visualize-data/anon-expr-5dsxr2nti9emWtVSNg7FoeKzNzf957-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:nextjournal/presented {:path [], :nextjournal/value :ok, :nextjournal/viewer {:name nextjournal.clerk.viewer/keyword-viewer, :render-fn #viewer-fn (fn [x] [:span.cmt-atom.inspected-value (str x)]), :hash \"5dsfx9mcALxzChApdWd2EzRdf4zLLp\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5dsxr2nti9emWtVSNg7FoeKzNzf957-result\"}}, :nextjournal/blob-id \"5dtgFenEbGcuzBEi3taj1YRiKAYMnU\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5dsxr2nti9emWtVSNg7FoeKzNzf957-result\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/result-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-result, :hash \"5dtGVHesd2XCTLFYF3aY4kJvkrX1x1\"}} {:path [], :nextjournal/value [:div.viewer.markdown-viewer.w-full.max-w-prose.px-8 {:data-block-id \"visualize-data/markdown-5dqoKCsz3DErS48kCBFqbJDdMstony\"} [\"h1\" {:id \"visualize-data\"} [:<> \"Visualize Data\"]]], :nextjournal/render-opts {:id \"visualize-data/markdown-5dqoKCsz3DErS48kCBFqbJDdMstony\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/markdown-node-viewer, :render-fn #viewer-fn identity, :hash \"5dsg4Bx9A9L7WvvCgamUoRtxUsmYCe\"}} {:path [], :nextjournal/value \"(comment\\n  (clerk/serve! {:browse? true :watch-paths [\\\".\\\"]})\\n  (clerk/show! \\\"src/assignment/generate_data.clj\\\")\\n  (clerk/build! {:paths [\\\"notebooks/visualize_data.clj\\\"]}))\", :nextjournal/render-opts {:loc {:line 13, :end-line 16, :column 1, :end-column 60}, :id \"visualize-data/anon-expr-5dqrddjEdFtYZaxdX61aqKXEn1JmzR-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:nextjournal/presented {:path [], :nextjournal/value nil, :nextjournal/viewer {:name nextjournal.clerk.viewer/nil-viewer, :render-fn #viewer-fn (fn [_] [:span.cmt-default.inspected-value \"nil\"]), :hash \"5ds3x8WPypHpZ82nScxBB4onExS7LG\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5dqrddjEdFtYZaxdX61aqKXEn1JmzR-result\"}}, :nextjournal/blob-id \"5dtXbH1DBt954KpXfmSHUvDsPU4wfJ\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5dqrddjEdFtYZaxdX61aqKXEn1JmzR-result\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/result-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-result, :hash \"5dtGVHesd2XCTLFYF3aY4kJvkrX1x1\"}} {:path [], :nextjournal/value \"(defn dist-range [dist]\\n  (-> (apply max dist)\\n      (-\\n        (apply min dist))))\", :nextjournal/render-opts {:loc {:line 19, :end-line 22, :column 1, :end-column 28}, :id \"visualize-data/dist-range-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value [:div.viewer.markdown-viewer.w-full.max-w-prose.px-8 {:data-block-id nil}], :nextjournal/viewer {:name nextjournal.clerk.viewer/markdown-node-viewer, :render-fn #viewer-fn identity, :hash \"5dsg4Bx9A9L7WvvCgamUoRtxUsmYCe\"}} {:path [], :nextjournal/value \"(-> (ds/select-rows data #(= (:group %) \\\"normal\\\"))\\n    (hanami/histogram :x2 {:nbins 20}))\", :nextjournal/render-opts {:loc {:line 24, :end-line 25, :column 1, :end-column 40}, :id \"visualize-data/anon-expr-5dtpmW9Ps5iKcaFx43uG8dm7MgcZ3G-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:encoding {:y {:field :count, :type \"quantitative\"}, :x {:scale {:zero false}, :field :left, :type \"quantitative\", :title :x2}, :y2 {:field 0, :type \"quantitative\"}, :x2 {:scale {:zero false}, :field :right, :type \"quantitative\"}}, :mark \"rect\", :width 400, :background \"floralwhite\", :height 300, :data {:values \"count,left,right\\n3,-11.831732800808922,-10.913054038682013\\n7,-10.913054038682013,-9.994375276555104\\n7,-9.994375276555104,-9.075696514428195\\n15,-9.075696514428195,-8.157017752301288\\n12,-8.157017752301288,-7.238338990174379\\n12,-7.238338990174379,-6.31966022804747\\n16,-6.31966022804747,-5.4009814659205615\\n19,-5.4009814659205615,-4.4823027037936525\\n18,-4.4823027037936525,-3.5636239416667443\\n9,-3.5636239416667443,-2.6449451795398353\\n11,-2.6449451795398353,-1.7262664174129263\\n18,-1.7262664174129263,-0.8075876552860173\\n17,-0.8075876552860173,0.11109110684089174\\n8,0.11109110684089174,1.029769868967799\\n9,1.029769868967799,1.948448631094708\\n5,1.948448631094708,2.867127393221617\\n9,2.867127393221617,3.785806155348526\\n1,3.785806155348526,4.704484917475433\\n1,4.704484917475433,5.623163679602342\\n3,5.623163679602342,6.541842441729251\\n\", :format {:type \"csv\"}}}, :nextjournal/viewer {:name nextjournal.clerk.viewer/vega-lite-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-vega-lite, :hash \"5dsx3z4ro6RD3Lfho3nUPiHNaYXurf\"}} {:path [], :nextjournal/value \"(-> (:x2 (ds/select-rows data #(= (:group %) \\\"normal\\\")))\\n    dist-range)\", :nextjournal/render-opts {:loc {:line 27, :end-line 28, :column 1, :end-column 16}, :id \"visualize-data/anon-expr-5duH9zXK88fVMJYND7wmijdc3w4HRJ-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:nextjournal/presented {:path [], :nextjournal/value 18.373575242538173, :nextjournal/viewer {:name nextjournal.clerk.viewer/number-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-number, :hash \"5dr3R1ZvHCoRHpxsQq4D4ARv9BQC7o\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5duH9zXK88fVMJYND7wmijdc3w4HRJ-result\"}}, :nextjournal/blob-id \"5drrXUWFeCpnQaP4eTjTifacN3PDcF\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5duH9zXK88fVMJYND7wmijdc3w4HRJ-result\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/result-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-result, :hash \"5dtGVHesd2XCTLFYF3aY4kJvkrX1x1\"}} {:path [], :nextjournal/value \"(-> (ds/select-rows data #(= (:group %) \\\"gamma\\\"))\\n    (hanami/histogram :x2 {:nbins 20}))\", :nextjournal/render-opts {:loc {:line 30, :end-line 31, :column 1, :end-column 40}, :id \"visualize-data/anon-expr-5dtkXELusigYSw7wQjXCYUaZj3uaeH-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:encoding {:y {:field :count, :type \"quantitative\"}, :x {:scale {:zero false}, :field :left, :type \"quantitative\", :title :x2}, :y2 {:field 0, :type \"quantitative\"}, :x2 {:scale {:zero false}, :field :right, :type \"quantitative\"}}, :mark \"rect\", :width 400, :background \"floralwhite\", :height 300, :data {:values \"count,left,right\\n4,2.0816684048703125,2.9251849347965715\\n18,2.9251849347965715,3.768701464722831\\n15,3.768701464722831,4.6122179946490895\\n15,4.6122179946490895,5.455734524575349\\n22,5.455734524575349,6.2992510545016085\\n21,6.2992510545016085,7.142767584427867\\n20,7.142767584427867,7.986284114354126\\n20,7.986284114354126,8.829800644280386\\n16,8.829800644280386,9.673317174206645\\n8,9.673317174206645,10.516833704132903\\n12,10.516833704132903,11.360350234059162\\n6,11.360350234059162,12.203866763985422\\n4,12.203866763985422,13.04738329391168\\n9,13.04738329391168,13.89089982383794\\n3,13.89089982383794,14.7344163537642\\n1,14.7344163537642,15.577932883690458\\n2,15.577932883690458,16.421449413616717\\n1,16.421449413616717,17.26496594354298\\n0,17.26496594354298,18.108482473469238\\n3,18.108482473469238,18.951999003395496\\n\", :format {:type \"csv\"}}}, :nextjournal/viewer {:name nextjournal.clerk.viewer/vega-lite-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-vega-lite, :hash \"5dsx3z4ro6RD3Lfho3nUPiHNaYXurf\"}} {:path [], :nextjournal/value \"(-> (:x2 (ds/select-rows data #(= (:group %) \\\"gamma\\\")))\\n    dist-range)\", :nextjournal/render-opts {:loc {:line 33, :end-line 34, :column 1, :end-column 16}, :id \"visualize-data/anon-expr-5draMujeim3nNirWEQnkhHtNE5XvFy-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:nextjournal/presented {:path [], :nextjournal/value 16.870330598525182, :nextjournal/viewer {:name nextjournal.clerk.viewer/number-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-number, :hash \"5dr3R1ZvHCoRHpxsQq4D4ARv9BQC7o\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5draMujeim3nNirWEQnkhHtNE5XvFy-result\"}}, :nextjournal/blob-id \"5drysWwrfheHQej3nCgNnPsixTtCty\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5draMujeim3nNirWEQnkhHtNE5XvFy-result\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/result-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-result, :hash \"5dtGVHesd2XCTLFYF3aY4kJvkrX1x1\"}} {:path [], :nextjournal/value \"(-> (ds/select-rows data #(= (:group %) \\\"log-normal\\\"))\\n    (hanami/histogram :x2 {:nbins 20}))\", :nextjournal/render-opts {:loc {:line 36, :end-line 37, :column 1, :end-column 40}, :id \"visualize-data/anon-expr-5drhYBZnQyokz4j5bsRFpbzWb9kk2F-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:encoding {:y {:field :count, :type \"quantitative\"}, :x {:scale {:zero false}, :field :left, :type \"quantitative\", :title :x2}, :y2 {:field 0, :type \"quantitative\"}, :x2 {:scale {:zero false}, :field :right, :type \"quantitative\"}}, :mark \"rect\", :width 400, :background \"floralwhite\", :height 300, :data {:values \"count,left,right\\n28,1.825577737740157,2.9323559048195387\\n27,2.9323559048195387,4.03913407189892\\n33,4.03913407189892,5.145912238978302\\n37,5.145912238978302,6.252690406057684\\n24,6.252690406057684,7.3594685731370655\\n13,7.3594685731370655,8.466246740216448\\n12,8.466246740216448,9.573024907295828\\n10,9.573024907295828,10.679803074375211\\n2,10.679803074375211,11.786581241454591\\n7,11.786581241454591,12.893359408533975\\n1,12.893359408533975,14.000137575613355\\n2,14.000137575613355,15.106915742692738\\n0,15.106915742692738,16.213693909772118\\n1,16.213693909772118,17.3204720768515\\n1,17.3204720768515,18.42725024393088\\n0,18.42725024393088,19.534028411010265\\n0,19.534028411010265,20.64080657808965\\n1,20.64080657808965,21.74758474516903\\n0,21.74758474516903,22.85436291224841\\n1,22.85436291224841,23.961141079327792\\n\", :format {:type \"csv\"}}}, :nextjournal/viewer {:name nextjournal.clerk.viewer/vega-lite-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-vega-lite, :hash \"5dsx3z4ro6RD3Lfho3nUPiHNaYXurf\"}} {:path [], :nextjournal/value \"(-> (:x2 (ds/select-rows data #(= (:group %) \\\"log-normal\\\")))\\n    dist-range)\", :nextjournal/render-opts {:loc {:line 39, :end-line 40, :column 1, :end-column 16}, :id \"visualize-data/anon-expr-5dtK76zPBayiYTWnUM8qTaGQpiZJvq-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:nextjournal/presented {:path [], :nextjournal/value 22.135563341587634, :nextjournal/viewer {:name nextjournal.clerk.viewer/number-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-number, :hash \"5dr3R1ZvHCoRHpxsQq4D4ARv9BQC7o\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5dtK76zPBayiYTWnUM8qTaGQpiZJvq-result\"}}, :nextjournal/blob-id \"5dsrFnKDArEpNuhYAAW7cr19iobJHp\"}, :nextjournal/render-opts {:id \"visualize-data/anon-expr-5dtK76zPBayiYTWnUM8qTaGQpiZJvq-result\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/result-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-result, :hash \"5dtGVHesd2XCTLFYF3aY4kJvkrX1x1\"}} {:path [], :nextjournal/value [:div.viewer.markdown-viewer.w-full.max-w-prose.px-8 {:data-block-id \"visualize-data/markdown-5dsXDM8SNRmSjZrREv2B8RHX38Mu1K\"} [:p [:<> \"Scatter plot\"]]], :nextjournal/render-opts {:id \"visualize-data/markdown-5dsXDM8SNRmSjZrREv2B8RHX38Mu1K\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/markdown-node-viewer, :render-fn #viewer-fn identity, :hash \"5dsg4Bx9A9L7WvvCgamUoRtxUsmYCe\"}} {:path [], :nextjournal/value \"(-> data\\n    (hanami/plot ht/point-chart\\n                 {:X \\\"x1\\\" :Y \\\"x2\\\" :COLOR \\\"group\\\"}))\", :nextjournal/render-opts {:loc {:line 43, :end-line 45, :column 1, :end-column 52}, :id \"visualize-data/anon-expr-5drS9UyS1DVAjT9h394g877CoacbaS-code\"}, :nextjournal/viewer {:name nextjournal.clerk.viewer/code-block-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-code-block, :hash \"5dru1FUcVRTRrVKJFbNw4FG2wXmiwB\"}} {:path [], :nextjournal/value {:encoding {:y {:field \"x2\", :type \"quantitative\"}, :color {:field \"group\", :type \"nominal\"}, :x {:field \"x1\", :type \"quantitative\"}}, :mark {:type \"circle\", :tooltip true}, :width 400, :background \"floralwhite\", :height 300, :data {:values \"x1,x2,group\\n6.196765122683464,7.792916096966867,gamma\\n7.64699055424351,9.591673781397047,gamma\\n5.670012643771979,4.993185135936677,gamma\\n4.147775830179755,3.6081152483958485,gamma\\n2.741910299722128,6.920892902581961,gamma\\n6.821581801943946,13.099112653556052,gamma\\n7.1689410507828875,14.316188968090927,gamma\\n9.233078532189866,13.408030227937184,gamma\\n9.133952719952973,6.884865292743621,gamma\\n9.44069363582993,3.712393072204892,gamma\\n6.0831290151953175,9.045177984162732,gamma\\n6.799002769674854,7.446454419235273,gamma\\n8.054952281536305,6.249553049087014,gamma\\n7.190991365077007,6.8363978138979675,gamma\\n8.401354025460396,13.517580325227303,gamma\\n6.1728127472625305,4.229126719289642,gamma\\n8.282512227372909,13.111779970268396,gamma\\n8.016610816012756,9.86374320715976,gamma\\n6.448947772582952,5.9168346995646885,gamma\\n9.912870156419613,3.945891375505193,gamma\\n7.304073751006623,5.847125412487735,gamma\\n11.138608800228049,9.793835524332938,gamma\\n7.687382560368701,13.179925970021698,gamma\\n9.079087035365943,7.768273498731279,gamma\\n4.0920446754292765,13.79670131623467,gamma\\n6.356781387598256,3.2724219070393086,gamma\\n6.586037759657447,6.33570032605635,gamma\\n7.713718137548795,12.04495599056236,gamma\\n7.031992214050939,9.537225547754062,gamma\\n6.520521541575169,8.01851036665771,gamma\\n3.7925071248848714,4.144653692276452,gamma\\n3.1704094821026527,8.789619387619846,gamma\\n9.515819610691066,2.993308476343821,gamma\\n5.863049849731503,7.143699913231932,gamma\\n8.00520097589905,7.297342602413176,gamma\\n6.600067054267143,9.7167888855654,gamma\\n9.821891389705149,12.024022675433788,gamma\\n7.242763377110719,14.050250039700016,gamma\\n6.184995490033249,8.81510530061022,gamma\\n8.70273940604464,9.644387270707435,gamma\\n8.715186520880321,4.8913489751901915,gamma\\n9.52520477054218,8.75448319132237,gamma\\n7.130778434994568,6.516466353130304,gamma\\n6.191091565186634,3.976002651152971,gamma\\n8.562175064607327,8.517857904604481,gamma\\n5.405774883255742,3.6293534184233636,gamma\\n9.463938342692684,5.015817145329468,gamma\\n2.356484759431342,16.95107496274054,gamma\\n9.999022616421676,15.673365735524635,gamma\\n6.1376485564751215,9.086729211708798,gamma\\n7.571229789031037,10.244640739733002,gamma\\n8.408991720422142,4.327629473186206,gamma\\n6.890283860160599,6.276827213507231,gamma\\n5.864022374146168,6.928712351922562,gamma\\n7.77844602325556,10.620004813138156,gamma\\n6.775522204018536,9.631410322938251,gamma\\n9.663360429895565,11.294424832196704,gamma\\n10.128027644275855,5.033139810548027,gamma\\n7.381301324302402,7.351871086997775,gamma\\n5.903849049658696,4.177252135080798,gamma\\n5.003561137332115,5.784581205435779,gamma\\n7.08899873519261,3.0824413010962814,gamma\\n4.509470071228502,8.288819664571816,gamma\\n7.635011701705623,3.7703155484275537,gamma\\n8.954846794174427,10.92569284927643,gamma\\n7.09216199144874,9.855920572590364,gamma\\n3.8184978526228845,13.588050736552226,gamma\\n8.25115958510778,5.503802064497264,gamma\\n9.114557317463225,7.52321448459481,gamma\\n6.267285821214764,3.0936613837467792,gamma\\n9.871503972828776,12.514104102463174,gamma\\n4.023218042269673,8.084698205112867,gamma\\n5.073286156286016,8.747231671778545,gamma\\n1.6961391242203598,6.051034147129388,gamma\\n3.5146010749663565,7.172877700602687,gamma\\n6.6583700129958405,4.58684143600278,gamma\\n8.984572575140266,11.89669788864872,gamma\\n8.094000615497404,7.365341140090507,gamma\\n11.344477833947977,7.898891793409838,gamma\\n6.142539439708075,7.23515275046773,gamma\\n6.579498232296741,3.0281566109478337,gamma\\n8.618722724064494,6.027566076243594,gamma\\n5.909737301332497,18.755578039959136,gamma\\n4.4962961502951995,4.3897884880661575,gamma\\n6.6966942349311385,2.105508785503813,gamma\\n6.069781973494369,6.389841674658272,gamma\\n9.654093591331158,11.006885937215095,gamma\\n4.540525170784087,3.7095975040675735,gamma\\n7.374852169012321,9.12390828851326,gamma\\n7.27262871173625,11.984146845943117,gamma\\n3.6835918530343186,5.90583335955543,gamma\\n5.13093977826683,4.22654453683843,gamma\\n9.37934700894214,8.68154778985216,gamma\\n5.732614139362185,5.498657885126279,gamma\\n3.5071163526217757,8.463149045742567,gamma\\n5.189438234908198,11.216743331630658,gamma\\n5.357335745337552,9.616443028817343,gamma\\n7.92819516860491,6.323651180344082,gamma\\n5.59378387078616,10.90164975467443,gamma\\n10.997623738108311,2.712713799195166,gamma\\n7.662829288436409,5.447343737310543,gamma\\n8.686437388754692,6.209434723358001,gamma\\n8.34091464400165,7.471249596651546,gamma\\n3.662748745889745,8.994196644055512,gamma\\n8.392048318074988,3.676965133918115,gamma\\n5.60801710744211,3.183009265714352,gamma\\n10.27029539179738,3.2622826342214424,gamma\\n1.7737782052767495,5.0777145886946435,gamma\\n7.546683911883667,6.6311663406432375,gamma\\n6.886221093873791,6.930632772647816,gamma\\n8.118161714594763,6.3685239224925345,gamma\\n8.217470286275846,15.192386928942234,gamma\\n8.251072472130739,6.1705000624954565,gamma\\n8.068232186995214,8.964797194751972,gamma\\n8.265890430218596,10.458298102714608,gamma\\n3.3749121736523016,13.073174972671438,gamma\\n10.338085780584537,6.977748311675905,gamma\\n4.033632824651706,3.0434391404749555,gamma\\n6.494708773322598,3.5078576935063417,gamma\\n7.341001487739763,5.599987181340994,gamma\\n6.528027747422821,5.171525648200152,gamma\\n10.032165964750373,10.801175989157105,gamma\\n7.103859287000649,5.327300517965398,gamma\\n7.6173558440055,3.5480227480323094,gamma\\n8.636399677169898,6.799372370173676,gamma\\n7.694765575914903,8.402862350763012,gamma\\n6.6190929656602915,4.060100948119662,gamma\\n9.128454481390568,6.313078545350206,gamma\\n7.669754741501311,5.339264721539856,gamma\\n4.827784343090949,5.036430761214039,gamma\\n6.049541604780165,5.807954020954504,gamma\\n5.43239462239164,5.685710847310305,gamma\\n9.953563651757465,6.7356846974469065,gamma\\n9.15041739899132,8.747391027279212,gamma\\n8.603582078184365,8.045550915245874,gamma\\n6.026466395087368,3.234471025467056,gamma\\n8.556726463163587,7.842726517836201,gamma\\n7.21055483348205,10.528283782582557,gamma\\n6.406138493358252,4.088226964394163,gamma\\n7.636613700227004,5.566413210336284,gamma\\n6.483277683429037,2.496009167084818,gamma\\n7.810715664474256,6.178480998224763,gamma\\n7.133410684082694,8.059911366061879,gamma\\n7.838426407574856,7.821694992898741,gamma\\n5.327321426898401,6.181596807065345,gamma\\n6.297873391247727,7.528233304479463,gamma\\n7.446076915071317,9.955682205343825,gamma\\n7.569273529379407,8.780742389984594,gamma\\n4.154619725049663,8.699622298610718,gamma\\n6.46928400553613,11.314867232362063,gamma\\n7.4294428216420085,6.791633836892494,gamma\\n8.076479522801215,8.939092676755688,gamma\\n2.764092842643028,4.7690790347680325,gamma\\n7.605268388431598,4.266446372220165,gamma\\n6.511161695041431,10.820133401574562,gamma\\n9.151249458304754,5.060224988316396,gamma\\n5.09617190905485,18.951999003395496,gamma\\n5.769671132001637,3.075150817824937,gamma\\n8.72195841062318,6.525379155154233,gamma\\n9.600336054481936,10.976454176679551,gamma\\n6.5181347286692235,7.491474858249745,gamma\\n9.598133209837982,8.890349580391401,gamma\\n4.289415992048122,9.275504434731406,gamma\\n5.485429113853627,7.559444461086365,gamma\\n9.803819305566941,12.58056056848222,gamma\\n10.257649528199313,3.4932681018015446,gamma\\n7.247205605124821,6.932994515129699,gamma\\n9.759850100592134,5.102758297402382,gamma\\n8.101294325859797,6.797901019284871,gamma\\n6.22060059965043,7.537700552956372,gamma\\n4.736575374619919,8.088569713853984,gamma\\n7.540284613051673,8.390406063815421,gamma\\n5.407374493896296,10.18175179796506,gamma\\n6.42067211880988,18.516020085641397,gamma\\n5.713725264910035,6.704619714002502,gamma\\n5.639054402917853,4.794793637677308,gamma\\n8.41874215083963,6.0815495748207935,gamma\\n6.056825714331109,5.342151539464831,gamma\\n3.804459901347856,10.804028183700478,gamma\\n12.269611451888114,6.891305336863539,gamma\\n7.264843327386112,7.769152730945475,gamma\\n6.883961516195227,11.85835113777379,gamma\\n8.957004045426073,12.55224501725595,gamma\\n5.847562107354964,6.283031299390972,gamma\\n9.032405660549598,6.0333498113039745,gamma\\n4.87573154521475,9.623603296440363,gamma\\n6.875874383476073,8.193343841671092,gamma\\n4.584923683445549,12.689554428854123,gamma\\n5.9972057229064415,8.788357510565568,gamma\\n5.543730991796229,9.293885038555226,gamma\\n5.614398298776613,14.395314433707822,gamma\\n8.167920609537752,13.618175756806224,gamma\\n6.5986393238175225,2.0816684048703125,gamma\\n5.219667371417739,3.9738273804692996,gamma\\n9.367091777799102,8.97281429770465,gamma\\n10.714384521521204,3.7957179862295365,gamma\\n10.310974566058245,5.897881610668225,gamma\\n7.843290620959859,7.5249101308069415,gamma\\n7.588713762136237,16.133210284813767,gamma\\n7.604344582765733,11.834230083236154,gamma\\n2.960877296582412,-10.090059433706045,normal\\n1.2306019338893375,1.5370686145550714,normal\\n8.072839244452366,-8.84584416016719,normal\\n4.154417633184016,0.20120651310660698,normal\\n4.0093174348499065,-4.755339239473159,normal\\n7.775747536517526,-1.8567417361919918,normal\\n0.06851791841373789,-8.193063258090929,normal\\n4.589959278774618,-1.874810966213448,normal\\n3.2115621171235995,-6.773077721881544,normal\\n1.1773227856704551,-8.478400300497093,normal\\n3.2191384581941325,-5.032070068486072,normal\\n4.198640623755176,-2.661114012424818,normal\\n4.410032566434105,-6.285721022008375,normal\\n2.1595012870599923,-3.765084897498199,normal\\n5.331339495261226,-5.117649978807505,normal\\n0.37087943946192725,-3.465583663147866,normal\\n4.7008216519844686,-0.8093733353475989,normal\\n5.1469724232159635,-6.0040886792676895,normal\\n4.4967139443688495,-1.5296218128706776,normal\\n2.905747932396525,-6.703528786635208,normal\\n4.594784190365809,-10.66708066036853,normal\\n4.262861043770933,-5.146649382894434,normal\\n6.6785977514132835,-0.9175588354417958,normal\\n6.815608925561926,-7.175521974975588,normal\\n5.585013837956315,-5.978500008365152,normal\\n1.654325808333141,3.8632526114338486,normal\\n4.94255803158309,-4.943668283965724,normal\\n6.015466957081949,-2.9959080313029007,normal\\n1.514009222206027,-6.244239300355594,normal\\n6.1409484443996085,3.2739503011858178,normal\\n5.378650830505477,-4.073246138797929,normal\\n-0.06723356402657821,-0.29634512018752623,normal\\n1.6524717063813141,-7.853870932596106,normal\\n1.3543936680242994,-5.260656969743955,normal\\n4.199742043205721,-1.6379704051033612,normal\\n3.777644484050242,-0.6150594375637737,normal\\n3.5972901542250537,0.10165219389728009,normal\\n6.958261174271357,-5.375561275053843,normal\\n1.645818237124785,2.5046197460672657,normal\\n0.18694232637402486,-3.8622426929394127,normal\\n4.381827013161801,-1.5498604989057636,normal\\n1.674670741561545,-3.4427506985998084,normal\\n1.104833243681151,-6.565669168134891,normal\\n3.774469681955697,-3.620908470981382,normal\\n4.433897666602001,-4.445163150788023,normal\\n1.659872022182547,-9.435177714177613,normal\\n4.426484927161994,-6.003083517462668,normal\\n3.3879020667242132,3.6236327217931485,normal\\n1.5130093971801335,-10.507636463799102,normal\\n5.71370293722818,-2.444514808556148,normal\\n6.911104338143271,-5.852298264397691,normal\\n3.189171084701557,-1.2724371404656152,normal\\n5.013060188430917,-4.779299883860301,normal\\n4.691642273110224,-7.554025468000926,normal\\n1.9431939971412966,0.7548738819178924,normal\\n3.63924675124911,-1.428433787278835,normal\\n4.419297193151033,-7.476495620217948,normal\\n2.0174491192490596,-2.4299162909779266,normal\\n4.629896079016418,1.3062696802652258,normal\\n5.580908503820226,-8.577916187180783,normal\\n3.5570979029230836,-0.8895600583655314,normal\\n5.9210323878754885,0.8896536186418684,normal\\n2.788768158152882,-3.092247918288284,normal\\n3.408206697759007,-3.8245256376255004,normal\\n5.588052732877588,-4.394907272896442,normal\\n2.8489044845571683,-1.5696659108609419,normal\\n0.5520987439823455,-7.917371020967426,normal\\n0.3696921190489384,-3.7991319415790734,normal\\n4.9125200463754854,0.7425081635818902,normal\\n4.486856213925321,-5.123458155449395,normal\\n6.429337898293388,1.5934401974735861,normal\\n3.15719723176062,-8.756413669481228,normal\\n5.077960081763322,3.060009875696652,normal\\n4.8235291668100375,-0.4111537836517347,normal\\n4.444267227409199,-7.030891885939033,normal\\n4.975954619707836,-9.641467575775092,normal\\n0.891312833308004,-8.442456091255092,normal\\n1.7650358889186024,-8.516998204539853,normal\\n4.252627345663965,2.8985046777807852,normal\\n8.225175201704683,-9.519430842464882,normal\\n3.495818366855892,-0.7635616526605498,normal\\n3.139015145508835,-10.722415787270844,normal\\n4.838756636616484,2.492061887064753,normal\\n5.743184949256197,1.1415504474324383,normal\\n2.829840801509846,-0.18522319382176589,normal\\n2.516704953647958,1.6445366988402528,normal\\n2.949810681111721,-9.758599398649043,normal\\n0.18188906994970777,-10.111658796285571,normal\\n2.7684415878856603,-7.6157421224656145,normal\\n2.1547826259416,-8.757911436874242,normal\\n1.6412555727929252,-5.7737930276420215,normal\\n3.051266837415262,-9.989902523116257,normal\\n8.906074347976414,-4.865694234688993,normal\\n5.4469210533835435,-7.795213077232921,normal\\n3.714610444265983,5.475003710900193,normal\\n2.279929010452676,-1.6299961990938914,normal\\n4.719812775033269,-2.534332694577457,normal\\n-0.2220395141991256,-0.3853535833042492,normal\\n5.253216970121851,-11.49825179512376,normal\\n6.314720113354218,-3.754709838713096,normal\\n2.9929303190655294,-4.438818276873918,normal\\n3.8168821280008283,5.835578182511146,normal\\n3.5470628852232027,-5.775970215667437,normal\\n2.665218738559461,1.8430266161158064,normal\\n7.2830626385000325,3.189899708563048,normal\\n3.3758952315045416,-3.7148363993499585,normal\\n4.842863458773977,-0.6862114012097345,normal\\n1.338299895390445,-8.58562840502227,normal\\n3.7034387276854583,-4.994577620324118,normal\\n4.915937009246612,-4.0404667453749905,normal\\n1.467764343271568,-6.417050279325069,normal\\n5.583105895601093,-1.0448471097498535,normal\\n4.162501294950147,1.0012378692417006,normal\\n3.244446205517828,-7.349219040985366,normal\\n0.03933380156924482,-2.2986674606031485,normal\\n3.364431178252637,-7.526169138525776,normal\\n5.147501338891697,-3.5067203995582243,normal\\n2.6477441604455194,-0.2181129273428164,normal\\n3.6442789847365713,-8.69206341827081,normal\\n6.832411153071822,-2.6622399870679985,normal\\n1.4030360525901968,-5.425173434443975,normal\\n5.565778610982209,-6.571522847600281,normal\\n2.6845857780292297,-2.7387730651093416,normal\\n2.0623108112111836,-9.465510035090233,normal\\n1.8572871184024065,3.118305012311141,normal\\n7.0239684368007245,-2.3604920440179162,normal\\n3.107119945078976,-8.631804793191208,normal\\n1.2637231521737342,-1.2151092703350979,normal\\n5.913389991848377,-9.609508996078606,normal\\n2.9691873423933197,2.9091969764157524,normal\\n5.270473207846295,3.666814349621558,normal\\n0.755319319990956,-6.49327766692514,normal\\n-0.47715198420311644,-1.510945465614225,normal\\n2.5106561546183883,-0.2411525645760646,normal\\n4.003117066452084,-7.654772139905486,normal\\n1.4740418898296124,-11.110196897673651,normal\\n1.3563907305795109,-2.3882204488453915,normal\\n4.487450217983381,1.119295802497084,normal\\n4.547346728527698,-4.670409156299078,normal\\n2.9568022926973514,-4.609099102927707,normal\\n2.6776574016835317,-10.497315926960654,normal\\n1.4960297371576985,0.47549226101353437,normal\\n2.1744935049966854,-7.105193244793879,normal\\n2.389337723076416,-3.791202685140605,normal\\n5.2781480234615765,-5.038001590045764,normal\\n4.577463204424192,1.9549951884024663,normal\\n5.753929059035097,-8.070997230666098,normal\\n3.9118626845377293,-6.97163226957999,normal\\n2.805619048857351,2.7792441688213767,normal\\n5.764359893703897,1.5188364578567146,normal\\n3.618263195014775,-10.135326379579826,normal\\n3.1848613823578376,-8.854897016503955,normal\\n2.912247729019198,-0.7715693481781716,normal\\n5.841516885111738,-5.937683656224831,normal\\n5.005667172744815,-3.699878676019953,normal\\n2.5663158664625776,-2.489771570283371,normal\\n0.6049770139886186,0.926888084386567,normal\\n1.682128776900162,-4.724278199411315,normal\\n5.9460892531320075,-0.37482160294750244,normal\\n5.503101520847473,-0.2080975415612003,normal\\n4.574952783939735,-5.376447436849897,normal\\n4.404777857062824,6.192332996394168,normal\\n4.789951359027744,-5.558528588133124,normal\\n3.629617878483108,-4.746509258701137,normal\\n2.991212438551628,-2.9238676211313233,normal\\n7.4186057889870245,-1.7323808013476558,normal\\n1.0698647840875029,-0.931086252882054,normal\\n2.8520678381651012,-3.836339855881274,normal\\n1.9761581003231452,-5.796972926151437,normal\\n5.290242674029658,-5.638480429007317,normal\\n4.617923741470518,-11.831732800808922,normal\\n3.1502807068966976,0.8342771806346319,normal\\n3.6115448948430844,1.7038801444856544,normal\\n3.5461497430482996,-8.95752104469846,normal\\n7.582809169468309,-0.5990196738890661,normal\\n7.405994845871563,-5.265994317970428,normal\\n3.057356570595932,-1.585154305924342,normal\\n2.4906609847532977,-4.876540374836983,normal\\n1.294723010705789,-2.410287982979865,normal\\n3.8325907776725825,-3.82473724186318,normal\\n0.02538323446384272,-0.4535208683029497,normal\\n3.0025635872909087,-8.178689842435999,normal\\n8.000895254448743,-8.208070313021569,normal\\n5.664497750601199,2.7726158373355556,normal\\n3.5991822934723228,-7.020245005087318,normal\\n4.246458207279785,-3.8118762430003503,normal\\n3.4318251991232107,-5.5957028560818305,normal\\n3.856328452733184,-1.6863911133900689,normal\\n4.695741343708128,0.0544308888520284,normal\\n5.40273571873999,-5.6710475229988875,normal\\n5.4819863377946945,3.561010606174043,normal\\n4.88289186989716,-0.8869998128023324,normal\\n3.7460992674074243,-7.278873069088336,normal\\n5.349483188098596,-1.5014196370565078,normal\\n3.0496562824997757,-6.856281544684565,normal\\n4.058918753405372,6.541842441729253,normal\\n6.061830927751437,-4.466554550323919,normal\\n1.6523102110282077,-7.621663499400327,normal\\n2.7820514176979074,-0.11674792792409372,normal\\n2.410194282371389,-6.064024580796369,normal\\n-0.7973064390160788,8.836303078376842,log-normal\\n-1.6171895465744084,2.7253962244461425,log-normal\\n1.741499480988884,4.608706108280775,log-normal\\n-0.8962472796534866,4.854648844778644,log-normal\\n2.9466057180575063,3.167366422034126,log-normal\\n-2.029656813542662,6.654231154605754,log-normal\\n-3.7255560575653472,5.3077432546274075,log-normal\\n-0.28523004790651585,2.932020667318347,log-normal\\n-4.1549914361522635,6.043512225527942,log-normal\\n0.32931940321872766,8.594879591942007,log-normal\\n-1.55268237215666,10.035134289078352,log-normal\\n-4.870930670238126,10.41714495808553,log-normal\\n2.1583094580127278,2.6402979602854684,log-normal\\n0.4021907883325262,6.45000584371771,log-normal\\n-1.6848359463786067,4.322439410261243,log-normal\\n-0.6309178838669818,4.188311251833285,log-normal\\n-2.3689475327150045,7.173356801613614,log-normal\\n-2.2337212023455884,7.571981723060318,log-normal\\n0.5393121407492074,7.158913917145985,log-normal\\n-3.245495041130029,7.263044980352313,log-normal\\n-1.0186885035512079,6.622545794579301,log-normal\\n-0.08695807788141108,5.30755433534302,log-normal\\n-0.9061070379939603,6.179223582530753,log-normal\\n-1.5053481433897438,17.487182138202044,log-normal\\n-3.1973916575220676,8.614569801493476,log-normal\\n0.6495311037734837,3.0582113161492277,log-normal\\n-2.4886725826361413,2.230768833022001,log-normal\\n0.2250153540029487,5.3200725159803826,log-normal\\n-1.0182717074521668,8.081475472874269,log-normal\\n-1.340553082052327,8.757515243463967,log-normal\\n-0.8643094001048062,2.735428358427201,log-normal\\n-6.492381533301342,2.777699656159299,log-normal\\n-5.516095518536158,3.5474405381149174,log-normal\\n-1.217151627385164,4.805615988393397,log-normal\\n-0.18550732803268666,6.576550330090405,log-normal\\n-0.9435866076148534,2.9002974494153806,log-normal\\n2.1739618653413415,9.742895779426206,log-normal\\n-4.586193095695902,7.040554678036572,log-normal\\n-3.9478769016402335,7.399026691750538,log-normal\\n-4.442806972070495,7.292966434479218,log-normal\\n-3.368846904780179,3.0604752384838023,log-normal\\n-1.6679669795518313,8.740235962387315,log-normal\\n2.940864629933004,5.79092789249607,log-normal\\n-3.915115043471589,7.872125544576924,log-normal\\n-2.0298319616606646,9.589577837191237,log-normal\\n-0.9061024369162864,4.9144194687962965,log-normal\\n-0.26897056049003765,6.221062275513761,log-normal\\n-3.3252973501061494,5.399690565540579,log-normal\\n-2.5470784421045796,5.90126159093315,log-normal\\n-0.5697794141100831,4.2138242532281645,log-normal\\n-0.8962231735644974,2.5302358464279417,log-normal\\n-0.11617143603506264,5.669750023314555,log-normal\\n-0.3585596753615109,4.636891284327371,log-normal\\n-1.6485856965021706,5.8257312947591835,log-normal\\n2.0312781779532743,10.59977273893411,log-normal\\n0.031137782959139715,7.463328289763097,log-normal\\n1.0114238456628821,2.5573339308292344,log-normal\\n-0.719150867368064,3.8599295369638305,log-normal\\n-0.311108158194895,8.853274517501115,log-normal\\n-0.592348311903548,7.68851998501968,log-normal\\n-5.247125239554093,9.800929778196775,log-normal\\n-1.4903057741219095,3.3253480600642265,log-normal\\n1.1014555406952034,4.450891532094375,log-normal\\n2.2454057764251636,3.9211508121153837,log-normal\\n-2.7536878613449263,3.3604266233316906,log-normal\\n1.642904082912926,9.466853276555552,log-normal\\n-0.5169185221656056,5.791040306906382,log-normal\\n0.7606894126522756,1.825577737740157,log-normal\\n1.6578452823583856,5.049917403730165,log-normal\\n-1.5660612073201567,4.060307844264582,log-normal\\n-1.6810203452524073,2.474249553777709,log-normal\\n0.7927108934782954,5.50410897557693,log-normal\\n-2.9437598860335763,13.355732394629536,log-normal\\n-0.33149703182977386,2.246091380565066,log-normal\\n-0.19620071471439393,3.9258218797873266,log-normal\\n-2.145495770902372,8.037723576651095,log-normal\\n1.241995655678612,6.251828068326773,log-normal\\n0.8243958736065966,9.414972795918079,log-normal\\n1.4441533137130476,5.589126599185963,log-normal\\n-0.6612671926264906,5.233379244815169,log-normal\\n-1.7810675198115158,2.736957342544646,log-normal\\n-1.3342714927295063,3.78288544151497,log-normal\\n-3.623385903480305,7.2962158186518735,log-normal\\n0.27734869934624307,12.405996843994819,log-normal\\n1.835433376919699,12.297429990331425,log-normal\\n-2.5761826767816096,4.87027044291481,log-normal\\n1.2225854091472144,7.814016557502539,log-normal\\n2.825111914585427,14.29402001816422,log-normal\\n0.17602567558704263,5.251498940236739,log-normal\\n-0.8057653564661093,8.137840242721904,log-normal\\n-2.8847553554462415,4.2990217390972205,log-normal\\n-4.308071366743648,5.668692679034631,log-normal\\n-0.6089274938184359,6.223952732035718,log-normal\\n-0.18332445738871872,9.586390932601912,log-normal\\n0.5200864213298046,6.649467513413494,log-normal\\n-1.283014951941585,3.660708071794362,log-normal\\n-0.13453511029838972,2.540280964852703,log-normal\\n-3.87347900444288,11.383708365311238,log-normal\\n-0.5717591688352361,2.6168522883337064,log-normal\\n-3.553530619978042,4.423776851010117,log-normal\\n-2.9421835569987245,5.465270043058732,log-normal\\n-3.7441365850608106,4.77265216195165,log-normal\\n-0.7370103820803694,5.51876639696938,log-normal\\n-0.4870089957223568,2.6721308682537788,log-normal\\n0.11605389077181827,6.250374442198031,log-normal\\n-1.649704316562489,3.7648973429722834,log-normal\\n1.4491340482256803,16.78159932613574,log-normal\\n-1.1646065203418865,9.60467614524358,log-normal\\n-0.24909035234984378,5.826419278743321,log-normal\\n1.908874683480012,5.11694034046284,log-normal\\n-1.650127937990173,5.501049979519879,log-normal\\n2.055548052747419,11.331487054558137,log-normal\\n0.4459382129225171,6.554234970817432,log-normal\\n0.5197149454590946,2.8664095618437404,log-normal\\n0.06043566718796689,5.281441271659822,log-normal\\n-2.4091578153150084,2.6900241838456593,log-normal\\n-2.5318793923294596,2.0277605566849912,log-normal\\n-4.273781073726868,4.7967259911719795,log-normal\\n-2.326189943830577,6.830643774181811,log-normal\\n-1.2449823884660716,20.68019079841648,log-normal\\n-1.3641749300468964,5.344626165794226,log-normal\\n-3.986142335236805,2.4197381675019916,log-normal\\n-2.021420545603217,4.639827330122083,log-normal\\n-2.1871492148103213,6.421499313571198,log-normal\\n-2.7014662849607296,6.236536775257428,log-normal\\n0.7545786289074372,4.943082504536699,log-normal\\n-2.814713197270291,3.438256712670992,log-normal\\n1.2435435734001148,4.011949361575764,log-normal\\n-2.2813755409988197,3.9097989427437203,log-normal\\n-2.6429375817921947,2.6305144954668904,log-normal\\n-1.9488135570676648,4.89742582266207,log-normal\\n-3.0337894436361283,23.961141079327792,log-normal\\n-2.290549254779606,3.482348078456143,log-normal\\n-0.029016804050855605,6.711265385878002,log-normal\\n-4.329955569822625,4.990169129304218,log-normal\\n-2.425172729146021,11.839436778923707,log-normal\\n1.23822578344351,7.204389553953893,log-normal\\n1.9341821675773656,2.8812006379330657,log-normal\\n-3.116468698841015,3.0770385667022695,log-normal\\n1.2849897991292645,4.575916373644547,log-normal\\n-1.7955393578692886,3.718801908939494,log-normal\\n-1.9071921642893672,5.896104200388594,log-normal\\n-5.759035314291657,5.3662467134488905,log-normal\\n1.2362045090196263,5.499249960517686,log-normal\\n-0.6153770725793395,2.8151525234558314,log-normal\\n2.309228863886492,3.356951115595827,log-normal\\n0.13284316486836212,2.8356092235307866,log-normal\\n-2.5804467148786503,9.343485583209583,log-normal\\n-1.9547618109908689,5.580175375305881,log-normal\\n-0.6697628896152477,5.163409803680341,log-normal\\n-0.8886320668093827,8.620719612279713,log-normal\\n-0.20389669363746743,7.0555422358902,log-normal\\n-0.2682306659160245,10.015910307311005,log-normal\\n-4.826022199485443,3.5621247397669684,log-normal\\n-0.5140359819963625,5.624281942047567,log-normal\\n-0.5425242279538512,4.097449085344569,log-normal\\n-0.3275108722367108,6.850839919081472,log-normal\\n-2.5034494473541877,12.178983915751399,log-normal\\n-1.7161285474389487,5.383652409313425,log-normal\\n-0.2277497694904057,5.347435395409375,log-normal\\n1.6052898479309348,6.439868245617813,log-normal\\n0.46399727452653483,4.88271528191459,log-normal\\n1.0446818362943033,3.7562695560328385,log-normal\\n1.5398434720753231,1.9148517695308045,log-normal\\n0.3697710683035047,4.989003779057023,log-normal\\n-1.4174812238489611,3.631216185533399,log-normal\\n-6.411945017020603,3.572348457892111,log-normal\\n-5.309605858019407,6.619543459784696,log-normal\\n-0.9399172954545487,5.756336742848568,log-normal\\n-0.6515946298399773,7.781152047343804,log-normal\\n1.1446725394801103,5.044203307257596,log-normal\\n0.7711556874496508,9.913881296393829,log-normal\\n-4.590814465089289,6.378405195673125,log-normal\\n0.8682246839139784,2.8815418213733888,log-normal\\n-1.808462356610729,3.1546399102722744,log-normal\\n-1.6369596001790243,8.443919068340357,log-normal\\n0.49527541369177785,8.910225612199035,log-normal\\n-3.7137015083216376,12.274817270859057,log-normal\\n-2.7236883644743464,7.86310355136468,log-normal\\n-1.9920716672158574,12.645872079769479,log-normal\\n-3.6191893556410077,4.536414011393409,log-normal\\n0.7513683663418067,6.812387108995021,log-normal\\n3.6797721559729393,2.5932825633638816,log-normal\\n-0.6106090398878683,14.305245504912465,log-normal\\n-0.5972660635462653,2.120500947268376,log-normal\\n0.7021769398911586,8.90868797866447,log-normal\\n1.411862904496941,12.03963573508011,log-normal\\n-1.8431335298452483,6.140479843447665,log-normal\\n-1.8006297412169965,4.148095610226895,log-normal\\n-2.9821446111970036,4.2021490751584905,log-normal\\n-2.4000905212006924,3.4164119238191306,log-normal\\n-2.9888922672585387,6.396202059723894,log-normal\\n-2.1897119582159394,3.187421326666973,log-normal\\n-0.22564169088511987,4.129154449545299,log-normal\\n-3.4023259382265416,3.5004004181037724,log-normal\\n1.1668568480201458,7.774564969043732,log-normal\\n-5.605416828041814,4.676184268993491,log-normal\\n-1.378827193293216,4.113701580553318,log-normal\\n-4.756782553954688,4.837160717865359,log-normal\\n-0.45825044895524014,6.487404046485124,log-normal\\n\", :format {:type \"csv\"}}}, :nextjournal/viewer {:name nextjournal.clerk.viewer/vega-lite-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-vega-lite, :hash \"5dsx3z4ro6RD3Lfho3nUPiHNaYXurf\"}}]}, :nextjournal/viewer {:name nextjournal.clerk.viewer/notebook-viewer, :render-fn #viewer-fn nextjournal.clerk.render/render-notebook, :hash \"5duAFDxE4sCnRX71Wo6zeCpC9C3djE\"}}}, :current-path \"\", :resource->url {\"/js/viewer.js\" \"https://storage.clerk.garden/nextjournal/clerk-assets@3mwzShgnuyfhgFN9ahRYKqV32K11/viewer.js?immutable=true\"}, :index \"notebooks/visualize_data.clj\"}".replaceAll('nextjournal.clerk.view/escape-closing-script-tag', 'script')
+viewer.init(viewer.read_string(state))
+</script></body></html>
