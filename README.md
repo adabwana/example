@@ -23,3 +23,6 @@ In any namespace where this is needed has to explicitly call:
 Rendered [notebooks/visualize_data.clj](notebooks/visualize_data.clj):
 - [in Clay](https://daslu.github.io/adabwana-example/docs/visualize_data)
 - [in Clerk](https://daslu.github.io/adabwana-example/public/build/)
+
+### Issue Persists
+daslu, I pulled your changes and added a comment block for `clay/make!`. Output is in `docs/`. Still data is not appearing in plots.
