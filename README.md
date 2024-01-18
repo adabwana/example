@@ -1,3 +1,5 @@
+(a fork of a repo by adabwana)
+
 ## Help Requested
 There were a few issues I've encountered with this project.
 
@@ -19,5 +21,5 @@ In any namespace where this is needed has to explicitly call:
 ```
 
 Rendered [notebooks/visualize_data.clj](notebooks/visualize_data.clj):
-- [in Clay]()
-- [in Clerk]()
+- [in Clay](https://daslu.github.io/adabwana-example/docs/visualize_data)
+- [in Clerk](https://daslu.github.io/adabwana-example/public/build/)
