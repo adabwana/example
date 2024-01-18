@@ -12,7 +12,7 @@ Thank you in advance.
 
 This fork to adabwana's project adds the following:
 
-Added [kind-clerk](https://github.com/scicloj/kind-clerk) so that [Kindly](https://scicloj.github.io/kindly-noted/kindly) visualizations work in Clerk.
+Added [kind-clerk](https://github.com/scicloj/kind-clerk) so that [Kindly](https://scicloj.github.io/kindly-noted/kindly) visualizations would work in Clerk.
 
 In any namespace where this is needed has to explicitly call:
 ```clj
