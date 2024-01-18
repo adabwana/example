@@ -1,4 +1,4 @@
-.clay.html
-.clerk
-.cpcache
 .nrepl-port
+.idea
+.cpcache
+*.iml

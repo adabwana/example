@@ -1,11 +1,12 @@
 (ns visualize-data
   (:require
-   [aerial.hanami.templates :as ht]
-   [generate-data :refer [data]]
-   [nextjournal.clerk :as clerk]
-   [scicloj.ml.dataset :as ds]
-   [scicloj.noj.v1.vis.hanami :as hanami]
-   [scicloj.kind-clerk.api :as kind-clerk]))
+    [aerial.hanami.templates :as ht]
+    [generate-data :refer [data]]
+    [nextjournal.clerk :as clerk]
+    [scicloj.clay.v2.api :as clay]
+    [scicloj.kind-clerk.api :as kind-clerk]
+    [scicloj.ml.dataset :as ds]
+    [scicloj.noj.v1.vis.hanami :as hanami]))
 
 (kind-clerk/setup!)
 
@@ -42,3 +43,8 @@
 (-> data
     (hanami/plot ht/point-chart
                  {:X "x1" :Y "x2" :COLOR "group"}))
+
+(comment
+  (clay/make! {:format      [:quarto :html]
+               :source-path "notebooks/visualize_data.clj"
+               :quarto      {:highlight-style :nord}}))
