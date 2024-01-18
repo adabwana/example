@@ -47,7 +47,7 @@
   ; also would prefer to use stats/cohens-kappa and/or f1 (is f1 applicable?).
   ; thought ml/classification would be less like to throw error bc it's a part of ml/ library.
   (ml/evaluate-pipelines
-    lda-pipe-fn
+    [lda-pipe-fn]
     train-test
     ml/classification-accuracy
     :accuracy
