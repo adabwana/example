@@ -1,15 +1,19 @@
 (ns visualize-data
   (:require
-    [aerial.hanami.templates :as ht]
-    [generate-data :refer [data]]
-    [nextjournal.clerk :as clerk]
-    [scicloj.ml.dataset :as ds]
-    [scicloj.noj.v1.vis.hanami :as hanami]))
+   [aerial.hanami.templates :as ht]
+   [generate-data :refer [data]]
+   [nextjournal.clerk :as clerk]
+   [scicloj.ml.dataset :as ds]
+   [scicloj.noj.v1.vis.hanami :as hanami]
+   [scicloj.kind-clerk.api :as kind-clerk]))
+
+(kind-clerk/setup!)
 
 ;; # Visualize Data
 (comment
   (clerk/serve! {:browse? true :watch-paths ["."]})
-  (clerk/show! "src/assignment/generate_data.clj"))
+  (clerk/show! "src/assignment/generate_data.clj")
+  (clerk/build! {:paths ["notebooks/visualize_data.clj"]}))
 
 (defn dist-range [dist]
   (-> (apply max dist)
