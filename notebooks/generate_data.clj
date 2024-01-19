@@ -5,7 +5,7 @@
 
 ;; # Generate Data
 (defn norm-dist [len]
-  (take len (dist/normal {:mu -4 :sd 4})))
+  (take len (dist/normal {:mu -6 :sd 4})))
 
 (defn make-normal-ds [len]
   {:x1    (take len (dist/normal {:mu 1 :sd 2 :location 4}))

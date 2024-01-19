@@ -63,6 +63,44 @@ include-in-header: {text: '<link rel = "icon" href = "data:," />'}
 
 ::: {.sourceClojure}
 ```clojure
+(ds/head data)
+```
+:::
+
+
+_unnamed [5 3]:
+
+|        :x1 |         :x2 | :group |
+|-----------:|------------:|--------|
+| 1.93704668 |  8.32009995 |  gamma |
+| 5.82493513 |  7.76927176 |  gamma |
+| 5.39182984 | 10.58551181 |  gamma |
+| 9.19427502 |  7.03201886 |  gamma |
+| 7.91315598 |  4.16772485 |  gamma |
+
+
+
+
+::: {.sourceClojure}
+```clojure
+(ds/info data)
+```
+:::
+
+
+_unnamed: descriptive-stats [3 12]:
+
+| :col-name | :datatype | :n-valid | :n-missing |         :min |      :mean | :mode |        :max | :standard-deviation |       :skew | :first |      :last |
+|-----------|-----------|---------:|-----------:|-------------:|-----------:|-------|------------:|--------------------:|------------:|--------|------------|
+|       :x1 |  :float64 |      600 |          0 |  -4.59248552 | 3.42852834 |       | 11.72362278 |          3.76698776 | -0.15311702 |  1.937 |    -0.7329 |
+|       :x2 |  :float64 |      600 |          0 | -16.48889331 | 3.38855586 |       | 23.00009878 |          6.08113998 | -0.35337515 |  8.320 |      8.987 |
+|    :group |   :string |      600 |          0 |              |            | gamma |             |                     |             |  gamma | log-normal |
+
+
+
+
+::: {.sourceClojure}
+```clojure
 (defn dist-range [dist]
   (-> (apply max dist)
       (-
@@ -94,7 +132,7 @@ include-in-header: {text: '<link rel = "icon" href = "data:," />'}
 
 ::: {.printedClojure}
 ```clojure
-21.382245062128582
+23.37639061361745
 
 ```
 :::
@@ -123,7 +161,7 @@ include-in-header: {text: '<link rel = "icon" href = "data:," />'}
 
 ::: {.printedClojure}
 ```clojure
-15.700595848152881
+21.19513048307295
 
 ```
 :::
@@ -152,7 +190,7 @@ include-in-header: {text: '<link rel = "icon" href = "data:," />'}
 
 ::: {.printedClojure}
 ```clojure
-52.07773714798094
+18.245427592279636
 
 ```
 :::

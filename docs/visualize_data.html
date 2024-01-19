@@ -126,14 +126,134 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  (clerk/build! {<span class="at">:paths</span> [<span class="st">"notebooks/visualize_data.clj"</span>]}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb5"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">defn</span><span class="fu"> dist-range </span>[dist]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">-&gt;</span> (<span class="kw">apply</span> <span class="kw">max</span> dist)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      (<span class="kw">-</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        (<span class="kw">apply</span> <span class="kw">min</span> dist))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(ds/head data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>_unnamed [5 3]:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">:x1</th>
+<th style="text-align: right;">:x2</th>
+<th>:group</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1.93704668</td>
+<td style="text-align: right;">8.32009995</td>
+<td>gamma</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5.82493513</td>
+<td style="text-align: right;">7.76927176</td>
+<td>gamma</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5.39182984</td>
+<td style="text-align: right;">10.58551181</td>
+<td>gamma</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9.19427502</td>
+<td style="text-align: right;">7.03201886</td>
+<td>gamma</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7.91315598</td>
+<td style="text-align: right;">4.16772485</td>
+<td>gamma</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceClojure">
+<div class="sourceCode" id="cb6"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(ds/info data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>_unnamed: descriptive-stats [3 12]:</p>
+<table class="table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 4%">
+<col style="width: 9%">
+<col style="width: 14%">
+<col style="width: 9%">
+<col style="width: 5%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>:col-name</th>
+<th>:datatype</th>
+<th style="text-align: right;">:n-valid</th>
+<th style="text-align: right;">:n-missing</th>
+<th style="text-align: right;">:min</th>
+<th style="text-align: right;">:mean</th>
+<th>:mode</th>
+<th style="text-align: right;">:max</th>
+<th style="text-align: right;">:standard-deviation</th>
+<th style="text-align: right;">:skew</th>
+<th>:first</th>
+<th>:last</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>:x1</td>
+<td>:float64</td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-4.59248552</td>
+<td style="text-align: right;">3.42852834</td>
+<td></td>
+<td style="text-align: right;">11.72362278</td>
+<td style="text-align: right;">3.76698776</td>
+<td style="text-align: right;">-0.15311702</td>
+<td>1.937</td>
+<td>-0.7329</td>
+</tr>
+<tr class="even">
+<td>:x2</td>
+<td>:float64</td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-16.48889331</td>
+<td style="text-align: right;">3.38855586</td>
+<td></td>
+<td style="text-align: right;">23.00009878</td>
+<td style="text-align: right;">6.08113998</td>
+<td style="text-align: right;">-0.35337515</td>
+<td>8.320</td>
+<td>8.987</td>
+</tr>
+<tr class="odd">
+<td>:group</td>
+<td>:string</td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td>gamma</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td>gamma</td>
+<td>log-normal</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceClojure">
+<div class="sourceCode" id="cb7"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">defn</span><span class="fu"> dist-range </span>[dist]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">-&gt;</span> (<span class="kw">apply</span> <span class="kw">max</span> dist)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>      (<span class="kw">-</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        (<span class="kw">apply</span> <span class="kw">min</span> dist))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb6"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"normal"</span>))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    (hanami/histogram <span class="at">:x2</span> {<span class="at">:nbins</span> <span class="dv">20</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"normal"</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    (hanami/histogram <span class="at">:x2</span> {<span class="at">:nbins</span> <span class="dv">20</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div style="max-height:600px;overflow-y:auto;">
 <div>
@@ -141,15 +261,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb7"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (<span class="at">:x2</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"normal"</span>)))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    dist-range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (<span class="at">:x2</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"normal"</span>)))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    dist-range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="printedClojure">
-<div class="sourceCode" id="cb8"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fl">21.382245062128582</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fl">23.37639061361745</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb9"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"gamma"</span>))</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    (hanami/histogram <span class="at">:x2</span> {<span class="at">:nbins</span> <span class="dv">20</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"gamma"</span>))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    (hanami/histogram <span class="at">:x2</span> {<span class="at">:nbins</span> <span class="dv">20</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div style="max-height:600px;overflow-y:auto;">
 <div>
@@ -157,15 +277,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb10"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (<span class="at">:x2</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"gamma"</span>)))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    dist-range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (<span class="at">:x2</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"gamma"</span>)))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    dist-range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="printedClojure">
-<div class="sourceCode" id="cb11"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fl">15.700595848152881</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fl">21.19513048307295</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb12"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"log-normal"</span>))</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    (hanami/histogram <span class="at">:x2</span> {<span class="at">:nbins</span> <span class="dv">20</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"log-normal"</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    (hanami/histogram <span class="at">:x2</span> {<span class="at">:nbins</span> <span class="dv">20</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div style="max-height:600px;overflow-y:auto;">
 <div>
@@ -173,17 +293,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb13"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (<span class="at">:x2</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"log-normal"</span>)))</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    dist-range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> (<span class="at">:x2</span> (ds/select-rows data #(<span class="kw">=</span> (<span class="at">:group</span> <span class="va">%</span>) <span class="st">"log-normal"</span>)))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    dist-range)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="printedClojure">
-<div class="sourceCode" id="cb14"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fl">52.07773714798094</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fl">18.245427592279636</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Scatter plot</p>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb15"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> data</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    (hanami/plot ht/point-chart</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                 {<span class="at">:X</span> <span class="st">"x1"</span> <span class="at">:Y</span> <span class="st">"x2"</span> <span class="at">:COLOR</span> <span class="st">"group"</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">-&gt;</span> data</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    (hanami/plot ht/point-chart</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                 {<span class="at">:X</span> <span class="st">"x1"</span> <span class="at">:Y</span> <span class="st">"x2"</span> <span class="at">:COLOR</span> <span class="st">"group"</span>}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div style="max-height:600px;overflow-y:auto;">
 <div>
@@ -191,10 +311,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="sourceClojure">
-<div class="sourceCode" id="cb16"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">comment</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  (clay/make! {<span class="at">:format</span>      [<span class="at">:quarto</span> <span class="at">:html</span>]</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">:source-path</span> <span class="st">"notebooks/visualize_data.clj"</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">:quarto</span>      {<span class="at">:highlight-style</span> <span class="at">:nord</span>}}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode clojure code-with-copy"><code class="sourceCode clojure"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">comment</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  (clay/make! {<span class="at">:format</span>      [<span class="at">:quarto</span> <span class="at">:html</span>]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">:source-path</span> <span class="st">"notebooks/visualize_data.clj"</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">:quarto</span>      {<span class="at">:highlight-style</span> <span class="at">:nord</span>}}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div style="background-color:grey;height:2px;width:100%;">
 

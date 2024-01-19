@@ -16,6 +16,9 @@
   (clerk/show! "src/assignment/generate_data.clj")
   (clerk/build! {:paths ["notebooks/visualize_data.clj"]}))
 
+(ds/head data)
+(ds/info data)
+
 (defn dist-range [dist]
   (-> (apply max dist)
       (-
@@ -47,4 +50,5 @@
 (comment
   (clay/make! {:format      [:quarto :html]
                :source-path "notebooks/visualize_data.clj"
-               :quarto      {:highlight-style :nord}}))
+               :quarto      {:highlight-style :nord}})
+  (clay/browse!))
